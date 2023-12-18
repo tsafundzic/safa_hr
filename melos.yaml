@@ -1,0 +1,42 @@
+name: unibe_mobile_tl
+
+packages:
+  - .
+  - di
+  - data
+  - domain
+
+scripts:
+  generate:
+    run: melos run pub_get && melos run build_runner && melos run translations
+    description: Generate all files.
+    orderDependents: true
+
+  pub_get:
+    exec: "flutter packages pub get"
+    description: Run pub get for all packages.
+
+  build_runner:
+    exec: "flutter packages pub run build_runner build --delete-conflicting-outputs"
+    description: Run build_runner for all packages.
+    orderDependents: true
+    concurrency: 1
+    packageFilters:
+      dependsOn: "build_runner"
+
+  launcher_icons:
+    exec: "flutter packages pub run flutter_launcher_icons"
+    description: Generate app launcher icons for apps.
+    packageFilters:
+      dependsOn: "flutter_launcher_icons"
+
+  translations:
+    exec: "flutter gen-l10n"
+    description: Generate translations.
+    packageFilters:
+      fileExists: "l10n.yaml"
+      flutter: true
+
+  test:
+    run: melos run test:package --no-select
+    description: Run all Flutter tests in this project.
